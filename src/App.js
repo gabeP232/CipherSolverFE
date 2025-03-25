@@ -8,16 +8,20 @@ class App extends Component {
     this.state = {
       inputText: '',
       outputText: '',
-      mode: 'encrypt', // Default mode
+      mode: 'decrypt',
       key: '',
+      foundKey: '',
+      keyDetails: '',
       isLoading: false,
-      error: null
+      error: null,
+      showDetails: false
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleKeyChange = this.handleKeyChange.bind(this);
     this.handleModeChange = this.handleModeChange.bind(this);
     this.handleProcess = this.handleProcess.bind(this);
+    this.toggleDetails = this.toggleDetails.bind(this);
   }
 
   handleInputChange(event) {
@@ -32,10 +36,20 @@ class App extends Component {
     this.setState({ mode: event.target.value });
   }
 
+  toggleDetails() {
+    this.setState(prevState => ({ showDetails: !prevState.showDetails }));
+  }
+
   handleProcess() {
-    this.setState({ isLoading: true, error: null });
+    this.setState({ 
+      isLoading: true, 
+      error: null, 
+      outputText: '', 
+      foundKey: '', 
+      keyDetails: '',
+      showDetails: false 
+    });
     
-    // Send the request to backend API with the text, mode, and key as query parameters
     axios.get('http://localhost:8080/cipher', {
       params: {
         text: this.state.inputText,
@@ -44,10 +58,19 @@ class App extends Component {
       }
     })
     .then(response => {
-      this.setState({ 
-        outputText: response.data.result,
-        isLoading: false 
-      });
+      if (response.data.error) {
+        this.setState({ 
+          error: response.data.error,
+          isLoading: false 
+        });
+      } else {
+        this.setState({ 
+          outputText: response.data.result,
+          foundKey: response.data.foundKey || '',
+          keyDetails: response.data.keyDetails || '',
+          isLoading: false 
+        });
+      }
     })
     .catch(error => {
       console.error("Error processing cipher:", error);
@@ -61,7 +84,7 @@ class App extends Component {
   render() {
     return (
       <div className='cipher-container'>
-        <h1 className='title'>Simple Substitution Cipher Decryptor and Encryptor</h1>
+        <h1 className='title'>Simple Substitution Cipher Solver</h1>
         
         <div className='mode-selector'>
           <label>
@@ -84,23 +107,6 @@ class App extends Component {
           </label>
         </div>
         
-        {this.state.mode === 'encrypt' && (
-          <div className='key-container'>
-            <label htmlFor="key-input">Substitution Key (optional):</label>
-            <input
-              id="key-input"
-              className='key-input'
-              type="text"
-              placeholder="Enter key (e.g., 'qwertyuiopasdfghjklzxcvbnm' or custom alphabet)"
-              value={this.state.key}
-              onChange={this.handleKeyChange}
-            />
-            <p className='key-help'>
-              The key defines the substitution alphabet. Must consist of all characters in the alphabet (duplicates will be ignored) 
-            </p>
-          </div>
-        )}
-        
         <div className='input-container'>
           <textarea
             className='text-area'
@@ -108,6 +114,16 @@ class App extends Component {
             value={this.state.inputText}
             onChange={this.handleInputChange}
             rows={5}
+          />
+        </div>
+        
+        <div className='key-container'>
+          <input
+            className='key-input'
+            type="text"
+            placeholder="Optional: Enter key (leave blank to auto-solve)"
+            value={this.state.key}
+            onChange={this.handleKeyChange}
           />
         </div>
         
@@ -123,6 +139,18 @@ class App extends Component {
         
         {this.state.error && <div className='error-message'>{this.state.error}</div>}
         
+        {this.state.foundKey && (
+          <div className='key-container'>
+            <h3>Found Key:</h3>
+            <input
+              className='key-input found-key'
+              type="text"
+              value={this.state.foundKey}
+              readOnly
+            />
+          </div>
+        )}
+
         <div className='output-container'>
           <h3>Result:</h3>
           <textarea
@@ -132,10 +160,24 @@ class App extends Component {
             rows={5}
           />
         </div>
-        
-        {this.state.mode === 'encrypt' && this.state.key && (
-          <div className='key-info'>
-            <p>Remember this key for decryption: <strong>{this.state.key}</strong></p>
+
+        {this.state.keyDetails && (
+          <div className='details-container'>
+            <button 
+              className='button details-button' 
+              onClick={this.toggleDetails}
+            >
+              {this.state.showDetails ? 'Hide Details' : 'Show Details'}
+            </button>
+
+            {this.state.showDetails && (
+              <textarea
+                className='text-area details-text'
+                value={this.state.keyDetails}
+                readOnly
+                rows={10}
+              />
+            )}
           </div>
         )}
       </div>
