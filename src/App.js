@@ -5,6 +5,7 @@ import axios from 'axios';
 class App extends Component {
   constructor() {
     super();
+    //Initial state setup with all variables
     this.state = {
       inputText: '',
       outputText: '',
@@ -17,6 +18,7 @@ class App extends Component {
       showDetails: false
     };
 
+    // Bind methods to ensure correct 'this'
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleKeyChange = this.handleKeyChange.bind(this);
     this.handleModeChange = this.handleModeChange.bind(this);
@@ -24,23 +26,30 @@ class App extends Component {
     this.toggleDetails = this.toggleDetails.bind(this);
   }
 
+  // Event handling methods
+  // Updates inputText
   handleInputChange(event) {
     this.setState({ inputText: event.target.value });
   }
 
+  // Updates key if entered
   handleKeyChange(event) {
     this.setState({ key: event.target.value });
   }
 
+  // Changes between Encrypt and Decrypt
   handleModeChange(event) {
     this.setState({ mode: event.target.value });
   }
 
+  // Toggle visibility of keyApproximation  
   toggleDetails() {
     this.setState(prevState => ({ showDetails: !prevState.showDetails }));
   }
 
+  // Backend communication
   handleProcess() {
+    // Resets state
     this.setState({ 
       isLoading: true, 
       error: null, 
@@ -50,6 +59,7 @@ class App extends Component {
       showDetails: false 
     });
     
+    // Call to backend endpoint
     axios.get('http://localhost:8080/cipher', {
       params: {
         text: this.state.inputText,
@@ -58,12 +68,14 @@ class App extends Component {
       }
     })
     .then(response => {
+      // Checks for successful response
       if (response.data.error) {
         this.setState({ 
           error: response.data.error,
           isLoading: false 
         });
       } else {
+        // Updates state with the results
         this.setState({ 
           outputText: response.data.result,
           foundKey: response.data.foundKey || '',
@@ -73,6 +85,7 @@ class App extends Component {
       }
     })
     .catch(error => {
+      // In case of network errors
       console.error("Error processing cipher:", error);
       this.setState({ 
         error: "Error connecting to the server. Please try again.",
@@ -81,11 +94,14 @@ class App extends Component {
     });
   }
      
+  // UI components
   render() {
     return (
       <div className='cipher-container'>
+        {/* Title */}
         <h1 className='title'>Simple Substitution Cipher Solver</h1>
         
+        {/* Selects encrypt or decrypt */}
         <div className='mode-selector'>
           <label>
             <input 
@@ -107,6 +123,7 @@ class App extends Component {
           </label>
         </div>
         
+        {/* Text area for input */}
         <div className='input-container'>
           <textarea
             className='text-area'
@@ -117,6 +134,7 @@ class App extends Component {
           />
         </div>
         
+        {/* Text area for optional key input */}
         <div className='key-container'>
           <input
             className='key-input'
@@ -127,6 +145,7 @@ class App extends Component {
           />
         </div>
         
+        {/* Button to process text */}
         <div className='button-container'>
           <button 
             className='button' 
@@ -137,8 +156,10 @@ class App extends Component {
           </button>
         </div>
         
+        {/* In case of error */}
         {this.state.error && <div className='error-message'>{this.state.error}</div>}
         
+        {/* Text display for found key */}
         {this.state.foundKey && (
           <div className='key-container'>
             <h3>Found Key:</h3>
@@ -151,6 +172,7 @@ class App extends Component {
           </div>
         )}
 
+        {/* Text area for the output */}
         <div className='output-container'>
           <h3>Result:</h3>
           <textarea
@@ -161,6 +183,7 @@ class App extends Component {
           />
         </div>
 
+        {/* Text area for details section if "show details" is clicked */}
         {this.state.keyDetails && (
           <div className='details-container'>
             <button 
