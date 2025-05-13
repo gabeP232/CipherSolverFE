@@ -15,6 +15,8 @@ class App extends Component {
       key: '',
       foundKey: '',
       keyDetails: '',
+      foundKey: '',
+      keyDetails: '',
       isLoading: false,
       error: null,
       showDetails: false,
@@ -50,10 +52,12 @@ class App extends Component {
     this.setState({ inputText: event.target.value });
   }
 
+  // Updates key if entered
   handleKeyChange(event) {
     this.setState({ key: event.target.value });
   }
 
+  // Changes between Encrypt and Decrypt
   handleModeChange(event) {
     const newMode = event.target.value;
     
@@ -260,6 +264,7 @@ class App extends Component {
       });
     })
     .catch(error => {
+      // In case of network errors
       // In case of network errors
       console.error("Error processing cipher:", error);
       this.setState({ 
@@ -607,6 +612,7 @@ class App extends Component {
           </button>
         </div>
         
+        {/* In case of error */}
         {/* In case of error */}
         {this.state.error && <div className='error-message'>{this.state.error}</div>}
         

@@ -15,7 +15,6 @@ html, body {
   border-radius: 8px;
   background-color: #ffffff;
 }
-
 .title {
   color: #333;
   margin-bottom: 20px;
@@ -82,7 +81,6 @@ html, body {
   flex-direction: column;
   align-items: center;
 }
-
 .key-input {
   width: 80%;
   padding: 10px;
@@ -110,7 +108,6 @@ html, body {
   color: #333;
   cursor: default;
 }
-
 .input-container, .output-container {
   margin-bottom: 20px;
 }
@@ -129,11 +126,9 @@ html, body {
   resize: vertical;
   font-family: 'Courier New', monospace;
 }
-
 .button-container {
   margin: 20px 0;
 }
-
 .button {
   background-color: #4CAF50;
   border: none;
@@ -145,16 +140,13 @@ html, body {
   cursor: pointer;
   transition: background-color 0.3s;
 }
-
 .button:hover {
   background-color: #45a049;
 }
-
 .button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
-
 .error-message {
   color: #ff0000;
   margin-bottom: 15px;
@@ -167,7 +159,6 @@ html, body {
   margin-bottom: 10px;
   color: #333;
 }
-
 @media (max-width: 600px) {
   .cipher-container {
     margin: 20px;
